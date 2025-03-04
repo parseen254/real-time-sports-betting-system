@@ -10,8 +10,8 @@ module Api::V1
     end
 
     def bets
-      user = User.find(params[:id])
-      bets = user.bets
+      user = User.find_by(id: params[:id])
+      bets = user ? user.bets : []
       render json: bets
     end
 
