@@ -8,6 +8,13 @@ module Api::V1
         render json: user.errors, status: :unprocessable_entity
       end
     end
+
+    def bets
+      user = User.find(params[:id])
+      bets = user.bets
+      render json: bets
+    end
+
     private
     def user_params
       params.require(:user).permit(:email, :password)

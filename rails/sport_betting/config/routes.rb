@@ -10,7 +10,11 @@ Rails.application.routes.draw do
   # root "posts#index"
   namespace :api do
     namespace :v1 do
-      resources :users, only: [:create]
+      resources :users, only: [:create] do
+        member do
+          get :bets
+        end
+      end
       resources :bets, only: [:create]
     end
   end
