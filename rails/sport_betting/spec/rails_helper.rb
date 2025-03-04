@@ -43,8 +43,11 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # Include FactoryBot methods
+  config.include FactoryBot::Syntax::Methods
+
   # You can uncomment this line to turn off ActiveRecord support entirely.
-  # config.use_active_record = false
+  config.use_active_record = false
 
   # RSpec Rails uses metadata to mix in different behaviours to your tests,
   # for example enabling you to call `get` and `post` in request specs. e.g.:
