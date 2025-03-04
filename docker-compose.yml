@@ -2,7 +2,7 @@ services:
   db:
     image: postgres
     volumes:
-      - ./tmp/postgres_data:/var/lib/postgresql/data
+      - ./tmp/postgres_data/db:/var/lib/postgresql/data
     ports:
       - 5432:5432
     environment:
@@ -16,7 +16,7 @@ services:
   rails:
     build: ./rails
     volumes:
-      - ./rails:/app
+      - ./rails/sport_betting:/rails 
       - gem_cache:/usr/local/bundle
       - rails_node_modules:/app/node_modules
     ports:
