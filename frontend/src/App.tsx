@@ -57,21 +57,20 @@ const AppRoutes: React.FC = () => {
         ) : (
           <>
             <NavLink
-              to="/login"
+              to="/leaderboard"
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
-              end
             >
-              Login
+              Leaderboard
             </NavLink>
             <NavLink
-              to="/signup"
+              to="/bet-history"
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
             >
-              Sign Up
+              Bet History
             </NavLink>
           </>
         )}
