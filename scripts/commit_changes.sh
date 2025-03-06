@@ -1,20 +1,21 @@
 #!/bin/bash
-# This script commits all current changes in the repository.
-# Usage: ./commit_changes.sh "Commit message"
+
+# Check if a commit message is provided
 if [ -z "$1" ]; then
-  echo "Error: Commit message required."
-  echo "Usage: ./commit_changes.sh \"Commit message\""
+  echo "Please provide a commit message."
   exit 1
 fi
 
-echo "Adding all changes..."
-git add -A
+# Add all changes
+git add .
 
-echo "Committing with message: $1"
+# Commit changes with the provided message
 git commit -m "$1"
 
-if [ $? -eq 0 ]; then
-  echo "Changes committed successfully."
-else
-  echo "No changes were committed. Please check if there are staged modifications."
+# Check for errors during commit
+if [ $? -ne 0 ]; then
+  echo "Commit failed."
+  exit 1
 fi
+
+echo "Changes committed successfully."
