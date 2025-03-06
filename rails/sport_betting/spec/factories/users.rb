@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :user do
-    email { "user#{rand(1..1000)}@example.com" }
-    password { "password" }
-    password_confirmation { "password" }
-    balance { 1000.00 }
+    sequence(:email) { |n| "user#{n}@example.com" }
+    sequence(:username) { |n| "user#{n}" }
+    password { "password123" }
+    password_confirmation { "password123" }
+    balance { 1000.0 }
   end
 end
