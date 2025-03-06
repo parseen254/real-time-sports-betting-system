@@ -2,7 +2,8 @@
 
 A scalable, real-time sports betting platform built with Ruby on Rails, Node.js, and React.
 
-## Table of Contents
+<details>
+<summary>Table of Contents</summary>
 
 - [Overview](#overview)
 - [Features](#features)
@@ -15,6 +16,7 @@ A scalable, real-time sports betting platform built with Ruby on Rails, Node.js,
 - [API Documentation](#api-documentation)
 - [Monitoring](#monitoring)
 - [Troubleshooting](#troubleshooting)
+</details>
 
 ## Overview
 
@@ -22,58 +24,31 @@ A scalable, real-time sports betting platform built with Ruby on Rails, Node.js,
 <summary>Click to expand</summary>
 
 A microservices-based sports betting system featuring:
-- Real-time odds updates and bet placement
-- User balance management and bet history
-- Fraud detection and prevention
-- Live leaderboard updates
-- Mock data generation for testing
+- Real-time odds updates via WebSocket
+- User balance management
+- Fraud detection system
+- Live leaderboard
+- Health monitoring
+
+### Health Checks
+All services implement health checks for reliable orchestration:
+```bash
+# Rails API health check
+curl http://localhost:3000/health
+
+# WebSocket Server health check
+curl http://localhost:3001/health
+
+# Services status check
+make health
+```
 
 ### Key Components
-
-- **Rails API**: Core backend for business logic
-- **Node.js**: Real-time updates via WebSocket
-- **React**: Modern, responsive frontend
-- **Redis**: Pub/sub and caching
-- **PostgreSQL**: Data persistence
-
-</details>
-
-## Features
-
-<details>
-<summary>Click to expand</summary>
-
-### Core Features
-- User registration and authentication
-- Real-time bet placement and odds updates
-- Live game status tracking
-- User balance management
-- Betting history and statistics
-
-### Advanced Features
-- Fraud detection system
-- Real-time leaderboard
-- WebSocket-based updates
-- Transaction safety with database locks
-- Comprehensive test coverage
-
-</details>
-
-## Prerequisites
-
-<details>
-<summary>Click to expand</summary>
-
-- Docker and Docker Compose
-- Make (for using Makefile commands)
-- Git
-
-Optional for local development:
-- Ruby 3.2.2
-- Node.js 18+
-- PostgreSQL 14
-- Redis 7
-
+- Rails API (port 3000)
+- Node.js WebSocket (port 3001)
+- React Frontend (port 3002)
+- Redis for pub/sub
+- PostgreSQL for data
 </details>
 
 ## Quick Start
@@ -81,56 +56,32 @@ Optional for local development:
 <details>
 <summary>Click to expand</summary>
 
-1. Clone the repository:
-\`\`\`bash
+1. Clone and setup:
+```bash
 git clone <repository-url>
 cd real-time-sports-betting-system
-\`\`\`
-
-2. Initial setup:
-\`\`\`bash
 make setup
-\`\`\`
-
-3. Start the system:
-\`\`\`bash
-make start
-\`\`\`
-
-4. Generate sample data:
-\`\`\`bash
-make generate-data
-\`\`\`
-
-5. Access the services:
-- Frontend: http://localhost:3002
-- API Documentation: http://localhost:3000/api-docs
-- WebSocket Server: ws://localhost:3001
-
-</details>
-
-## Architecture
-
-<details>
-<summary>Click to expand</summary>
-
-### System Architecture
-
-```mermaid
-graph TD
-    A[Frontend - 3002] --> B[Rails API - 3000]
-    A --> C[Node WS - 3001]
-    B --> D[PostgreSQL]
-    B --> E[Redis]
-    C --> E
 ```
 
-### Data Flow
-1. User places bet via frontend
-2. Rails API validates and processes bet
-3. WebSocket server notifies all clients
-4. Leaderboard updates in real-time
+2. Run tests:
+```bash
+make test
+```
 
+3. Start services:
+```bash
+make start
+```
+
+4. Generate sample data:
+```bash
+make generate-data
+```
+
+Access the services:
+- Frontend: http://localhost:3002
+- API Docs: http://localhost:3000/api-docs
+- WS Server: ws://localhost:3001
 </details>
 
 ## Development
@@ -138,33 +89,39 @@ graph TD
 <details>
 <summary>Click to expand</summary>
 
-### Available Make Commands
+### Available Commands
 
 ```bash
-make help                 # Show all available commands
-make start               # Start all containers
-make stop                # Stop all containers
-make restart             # Restart all containers
-make logs                # View logs
-make shell-rails         # Access Rails console
-make shell-node          # Access Node console
+# Build and start services
+make setup
+make start
+
+# Database operations
+make db-migrate
+make db-reset
+
+# Testing
+make test
+make test-rails
+make test-frontend
+
+# Development tools
+make logs
+make shell-rails
+make shell-node
+
+# Data operations
+make generate-data
+make simulate-changes
 ```
 
 ### Container Structure
-
-- **rails**: API and business logic
-- **node**: WebSocket server
-- **frontend**: React application
-- **db**: PostgreSQL database
-- **redis**: Caching and pub/sub
-
-### Environment Variables
-
-- `RAILS_ENV`: Rails environment
-- `NODE_ENV`: Node.js environment
-- `REDIS_URL`: Redis connection URL
-- `DATABASE_URL`: PostgreSQL connection URL
-
+All services run in Docker containers:
+- `rails`: Core API service
+- `node`: WebSocket server
+- `frontend`: React application
+- `db`: PostgreSQL database
+- `redis`: Caching and pub/sub
 </details>
 
 ## Testing
@@ -173,25 +130,19 @@ make shell-node          # Access Node console
 <summary>Click to expand</summary>
 
 ### Running Tests
-
 ```bash
-# Run all tests
+# Full test suite
 make test
 
-# Run specific test suites
+# Individual components
 make test-rails
 make test-frontend
-
-# Run with specific environment
-RAILS_ENV=test make test-rails
 ```
 
 ### Test Structure
-
-- **Rails**: RSpec for unit and integration tests
-- **Frontend**: Jest for component and integration tests
-- **WebSocket**: Integration tests with mock clients
-
+- Rails: RSpec for unit and integration tests
+- Node.js: Jest for WebSocket and API tests
+- Frontend: Jest + React Testing Library
 </details>
 
 ## Data Simulation
@@ -199,31 +150,21 @@ RAILS_ENV=test make test-rails
 <details>
 <summary>Click to expand</summary>
 
-### Generating Mock Data
-
+### Mock Data Generation
 ```bash
-# Generate initial mock data
+# Generate initial data
 make generate-data
 
-# Simulate real-time changes
+# Simulate live updates
 make simulate-changes
 ```
 
-### Data Generation Includes
-
+### Available Data
+The system generates:
 - Sample users with balances
 - Active and upcoming games
 - Historical bets and results
 - Leaderboard data
-
-### Real-time Simulation
-
-The system can simulate:
-- Odds changes
-- Game status updates
-- New bets placement
-- Balance updates
-
 </details>
 
 ## API Documentation
@@ -232,20 +173,21 @@ The system can simulate:
 <summary>Click to expand</summary>
 
 ### Authentication
-
 ```ruby
-# Headers required for authenticated endpoints
-Authorization: Bearer <jwt_token>
+# Headers
+Authorization: Bearer <token>
 Content-Type: application/json
 ```
 
-### Key Endpoints
+### Core Endpoints
+- POST /api/v1/users
+- POST /api/v1/bets
+- GET /api/v1/users/:id/bets
+- GET /api/v1/leaderboard
 
-- `POST /api/v1/users`: Create new user
-- `POST /api/v1/bets`: Place new bet
-- `GET /api/v1/users/:id/bets`: Get user bet history
-- `GET /api/v1/leaderboard`: Get current leaderboard
-
+### Health Checks
+- GET /health
+- GET /api/v1/status
 </details>
 
 ## Monitoring
@@ -254,23 +196,30 @@ Content-Type: application/json
 <summary>Click to expand</summary>
 
 ### Health Checks
-
-- Database: `localhost:5432/health`
-- Redis: `localhost:6379/ping`
-- Rails: `localhost:3000/health`
-- Node: `localhost:3001/health`
-
-### Logs
-
+All services implement health endpoints:
 ```bash
-# View all logs
+# Check all services
+make health
+
+# Individual services
+curl http://localhost:3000/health
+curl http://localhost:3001/health
+```
+
+### Log Access
+```bash
+# All logs
 make logs
 
-# View specific service logs
+# Service specific
 docker compose logs rails
 docker compose logs node
 ```
 
+### Metrics
+- User activity
+- Betting patterns
+- System health
 </details>
 
 ## Troubleshooting
@@ -280,27 +229,31 @@ docker compose logs node
 
 ### Common Issues
 
-1. **Database Connection Issues**
-   ```bash
-   make db-reset  # Reset and recreate database
-   ```
-
-2. **Redis Connection Issues**
-   ```bash
-   make restart   # Restart all services
-   ```
-
-3. **Container Issues**
-   ```bash
-   make clean    # Remove all containers and volumes
-   make setup    # Fresh setup
-   ```
-
-### Debug Mode
-
-Set `DEBUG=true` for additional logging:
+1. Database Connection:
 ```bash
-DEBUG=true make start
+make db-reset
 ```
 
+2. Redis Connection:
+```bash
+make restart
+```
+
+3. Container Issues:
+```bash
+make clean
+make setup
+```
+
+### Debugging
+```bash
+# Enable debug mode
+DEBUG=true make start
+
+# Access logs
+make logs
+
+# Rails console
+make shell-rails
+```
 </details>

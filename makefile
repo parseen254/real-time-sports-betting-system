@@ -57,7 +57,20 @@ generate-data:
 	docker compose run --rm rails rails runner 'require "rake"; Rake::Task["mock_data:generate"].invoke'
 
 simulate-changes:
-	docker compose run --rm rails rails runner 'require "rake"; Rake::Task["mock_data:simulate_changes"].invoke'
+docker compose run --rm rails rails runner 'require "rake"; Rake::Task["mock_data:simulate_changes"].invoke'
+
+# Health checks
+health:
+@echo "Checking service health..."
+@echo "\nChecking PostgreSQL..."
+@docker compose exec db pg_isready -U postgres || exit 1
+@echo "\nChecking Redis..."
+@docker compose exec redis redis-cli ping || exit 1
+@echo "\nChecking Rails API..."
+@curl -f http://localhost:3000/health || exit 1
+@echo "\nChecking WebSocket server..."
+@curl -f http://localhost:3001/health || exit 1
+@echo "\nAll services are healthy!"
 
 # Development helpers
 shell-rails:
