@@ -18,9 +18,17 @@ logs:
 
 # Database operations
 setup: build
-	docker compose run --rm rails bin/setup
-	docker compose run --rm rails rails db:create db:migrate
-	docker compose run --rm rails rails db:migrate RAILS_ENV=test
+	@echo "Setting up the application..."
+	docker compose down -v
+	docker compose up -d db redis
+	@echo "Waiting for databases to be ready..."
+	sleep 5
+	docker compose run --rm rails bin/rails db:drop db:create db:migrate
+	docker compose run --rm rails bin/rails db:drop db:create db:migrate RAILS_ENV=test
+	docker compose run --rm rails bin/rails db:seed
+	@echo "Starting all services..."
+	docker compose up -d
+	@echo "Setup completed successfully!"
 
 db-migrate:
 	docker compose run --rm rails rails db:migrate
