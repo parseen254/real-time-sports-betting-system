@@ -1,127 +1,120 @@
-# Real-Time Sports Betting System Analysis
+# Real-Time Sports Betting System
 
-## Repository Structure
+A scalable, real-time sports betting platform built with Ruby on Rails, Node.js, and React.
 
-```tree
-├── README.md
-├── docker-compose.yml
-├── frontend/
-│   ├── Dockerfile
-│   ├── package.json
-│   └── src/
-│       ├── App.tsx
-│       ├── components/
-│       ├── contexts/
-│       ├── pages/
-│       ├── services/
-│       └── types/
-├── node/
-│   ├── Dockerfile
-│   ├── package.json
-│   └── server.js
-└── rails/
-    └── sport_betting/
-        ├── Gemfile
-        ├── app/
-        │   ├── controllers/
-        │   ├── models/
-        │   └── services/
-        ├── config/
-        └── spec/
-```
+## Table of Contents
 
-## Architecture Overview
+- [Overview](#overview)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Architecture](#architecture)
+- [Development](#development)
+- [Testing](#testing)
+- [Data Simulation](#data-simulation)
+- [API Documentation](#api-documentation)
+- [Monitoring](#monitoring)
+- [Troubleshooting](#troubleshooting)
 
-This is a microservices-based real-time sports betting system with three main components:
+## Overview
 
-1. **Frontend (Port 3002)**
-   - React-based TypeScript application
-   - Real-time updates via WebSocket
-   - Key dependencies:
-     - React 18.2.0
-     - TypeScript 4.x
-     - WebSocket for real-time communication
-     - React Router for navigation
+<details>
+<summary>Click to expand</summary>
 
-2. **Node.js Service (Port 3001)**
-   - WebSocket server for real-time updates
-   - Handles betting events and live game updates
-   - Integrates with Redis for pub/sub
+A microservices-based sports betting system featuring:
+- Real-time odds updates and bet placement
+- User balance management and bet history
+- Fraud detection and prevention
+- Live leaderboard updates
+- Mock data generation for testing
 
-3. **Rails API (Port 3000)**
-   - Ruby on Rails 7.1.5
-   - PostgreSQL database
-   - Key features:
-     - User authentication (Devise)
-     - Background job processing (Sidekiq)
-     - API documentation (RSwag)
-     - Fraud detection service
+### Key Components
 
-## Infrastructure
+- **Rails API**: Core backend for business logic
+- **Node.js**: Real-time updates via WebSocket
+- **React**: Modern, responsive frontend
+- **Redis**: Pub/sub and caching
+- **PostgreSQL**: Data persistence
 
-### Docker Composition
+</details>
 
-- **Database**: PostgreSQL with persistent volume
-- **Cache**: Redis for real-time events and Sidekiq
-- **Services**:
-  - Rails API container with hot reload
-  - Node.js WebSocket server
-  - React frontend development server
+## Features
 
-### Database Structure
+<details>
+<summary>Click to expand</summary>
 
-- User model with Devise integration
-- Games table for sports events
-- Bets table tracking user wagers
-- Balance tracking for users
+### Core Features
+- User registration and authentication
+- Real-time bet placement and odds updates
+- Live game status tracking
+- User balance management
+- Betting history and statistics
 
-### API Routes
+### Advanced Features
+- Fraud detection system
+- Real-time leaderboard
+- WebSocket-based updates
+- Transaction safety with database locks
+- Comprehensive test coverage
 
-```ruby
-namespace :api do
-  namespace :v1 do
-    resources :users, only: [:create] do
-      member do
-        get :bets  # User bet history
-      end
-    end
-    resources :bets, only: [:create]  # Place new bets
-  end
-end
-```
+</details>
 
-## Key Features
+## Prerequisites
 
-1. **Real-Time Betting**
-   - WebSocket integration for live updates
-   - Real-time balance updates
-   - Live game status changes
+<details>
+<summary>Click to expand</summary>
 
-2. **User Management**
-   - User registration and authentication
-   - Balance tracking
-   - Bet history
+- Docker and Docker Compose
+- Make (for using Makefile commands)
+- Git
 
-3. **Fraud Prevention**
-   - Dedicated FraudDetectionService
-   - Real-time transaction monitoring
+Optional for local development:
+- Ruby 3.2.2
+- Node.js 18+
+- PostgreSQL 14
+- Redis 7
 
-4. **Testing**
-   - RSpec for Rails API testing
-   - Factory Bot for test data
-   - Controller specs for API endpoints
+</details>
 
-## Development Setup
+## Quick Start
 
-Services run on different ports:
+<details>
+<summary>Click to expand</summary>
 
-- Frontend: <http://localhost:3002>
-- Rails API: <http://localhost:3000>
-- WebSocket Server: <http://localhost:3001>
-- PostgreSQL: localhost:5432
-- Redis: localhost:6379
+1. Clone the repository:
+\`\`\`bash
+git clone <repository-url>
+cd real-time-sports-betting-system
+\`\`\`
 
-### Container Dependencies
+2. Initial setup:
+\`\`\`bash
+make setup
+\`\`\`
+
+3. Start the system:
+\`\`\`bash
+make start
+\`\`\`
+
+4. Generate sample data:
+\`\`\`bash
+make generate-data
+\`\`\`
+
+5. Access the services:
+- Frontend: http://localhost:3002
+- API Documentation: http://localhost:3000/api-docs
+- WebSocket Server: ws://localhost:3001
+
+</details>
+
+## Architecture
+
+<details>
+<summary>Click to expand</summary>
+
+### System Architecture
 
 ```mermaid
 graph TD
@@ -132,28 +125,182 @@ graph TD
     C --> E
 ```
 
-## Technical Stack
+### Data Flow
+1. User places bet via frontend
+2. Rails API validates and processes bet
+3. WebSocket server notifies all clients
+4. Leaderboard updates in real-time
 
-1. **Frontend**
-   - React 18
-   - TypeScript
-   - WebSocket client
-   - React Router DOM
+</details>
 
-2. **Backend (Rails)**
-   - Rails 7.1.5
-   - PostgreSQL
-   - Devise for auth
-   - Sidekiq for background jobs
-   - RSwag for API docs
+## Development
 
-3. **Real-time Service (Node)**
-   - Node.js
-   - WebSocket server
-   - Redis integration
+<details>
+<summary>Click to expand</summary>
 
-4. **Infrastructure**
-   - Docker Compose
-   - Volume persistence for DB
-   - Hot reload enabled
-   - Development optimized
+### Available Make Commands
+
+```bash
+make help                 # Show all available commands
+make start               # Start all containers
+make stop                # Stop all containers
+make restart             # Restart all containers
+make logs                # View logs
+make shell-rails         # Access Rails console
+make shell-node          # Access Node console
+```
+
+### Container Structure
+
+- **rails**: API and business logic
+- **node**: WebSocket server
+- **frontend**: React application
+- **db**: PostgreSQL database
+- **redis**: Caching and pub/sub
+
+### Environment Variables
+
+- `RAILS_ENV`: Rails environment
+- `NODE_ENV`: Node.js environment
+- `REDIS_URL`: Redis connection URL
+- `DATABASE_URL`: PostgreSQL connection URL
+
+</details>
+
+## Testing
+
+<details>
+<summary>Click to expand</summary>
+
+### Running Tests
+
+```bash
+# Run all tests
+make test
+
+# Run specific test suites
+make test-rails
+make test-frontend
+
+# Run with specific environment
+RAILS_ENV=test make test-rails
+```
+
+### Test Structure
+
+- **Rails**: RSpec for unit and integration tests
+- **Frontend**: Jest for component and integration tests
+- **WebSocket**: Integration tests with mock clients
+
+</details>
+
+## Data Simulation
+
+<details>
+<summary>Click to expand</summary>
+
+### Generating Mock Data
+
+```bash
+# Generate initial mock data
+make generate-data
+
+# Simulate real-time changes
+make simulate-changes
+```
+
+### Data Generation Includes
+
+- Sample users with balances
+- Active and upcoming games
+- Historical bets and results
+- Leaderboard data
+
+### Real-time Simulation
+
+The system can simulate:
+- Odds changes
+- Game status updates
+- New bets placement
+- Balance updates
+
+</details>
+
+## API Documentation
+
+<details>
+<summary>Click to expand</summary>
+
+### Authentication
+
+```ruby
+# Headers required for authenticated endpoints
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+```
+
+### Key Endpoints
+
+- `POST /api/v1/users`: Create new user
+- `POST /api/v1/bets`: Place new bet
+- `GET /api/v1/users/:id/bets`: Get user bet history
+- `GET /api/v1/leaderboard`: Get current leaderboard
+
+</details>
+
+## Monitoring
+
+<details>
+<summary>Click to expand</summary>
+
+### Health Checks
+
+- Database: `localhost:5432/health`
+- Redis: `localhost:6379/ping`
+- Rails: `localhost:3000/health`
+- Node: `localhost:3001/health`
+
+### Logs
+
+```bash
+# View all logs
+make logs
+
+# View specific service logs
+docker compose logs rails
+docker compose logs node
+```
+
+</details>
+
+## Troubleshooting
+
+<details>
+<summary>Click to expand</summary>
+
+### Common Issues
+
+1. **Database Connection Issues**
+   ```bash
+   make db-reset  # Reset and recreate database
+   ```
+
+2. **Redis Connection Issues**
+   ```bash
+   make restart   # Restart all services
+   ```
+
+3. **Container Issues**
+   ```bash
+   make clean    # Remove all containers and volumes
+   make setup    # Fresh setup
+   ```
+
+### Debug Mode
+
+Set `DEBUG=true` for additional logging:
+```bash
+DEBUG=true make start
+```
+
+</details>

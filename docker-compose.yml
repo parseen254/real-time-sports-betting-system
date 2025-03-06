@@ -1,56 +1,93 @@
+version: '3.8'
+
 services:
   db:
-    image: postgres
+    image: postgres:14-alpine
     volumes:
-      - ./tmp/postgres_data/db:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=sports_betting_development
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   redis:
-    image: redis
+    image: redis:7-alpine
     volumes:
-      - ./tmp/redis_data:/var/lib/redis/data
+      - redis_data:/data
     ports:
-      - 6379:6379
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   rails:
-    build: ./rails
+    build: 
+      context: ./rails
+      dockerfile: Dockerfile
     volumes:
-      - ./rails/sport_betting:/rails 
-      - rails_node_modules:/app/node_modules
+      - ./rails/sport_betting:/rails
+      - rails_gems:/usr/local/bundle
+      - rails_node_modules:/rails/node_modules
     ports:
-      - 3000:3000
+      - "3000:3000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
-      - RAILS_ENV=development
-      - DATABASE_URL=postgresql://postgres@db:5432/sports_betting
+      - RAILS_ENV=${RAILS_ENV:-development}
       - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://postgres@db:5432/sports_betting_${RAILS_ENV:-development}
+      - TEST_DATABASE_URL=postgresql://postgres@db:5432/sports_betting_test
+    command: ./bin/docker-entrypoint
+
   node:
-    build: ./node
+    build: 
+      context: ./node
+      dockerfile: Dockerfile
     volumes:
       - ./node:/app
-      - node_node_modules:/app/node_modules
+      - node_modules:/app/node_modules
     ports:
-      - 3001:3000
+      - "3001:3001"
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     environment:
+      - NODE_ENV=${NODE_ENV:-development}
       - REDIS_URL=redis://redis:6379/0
+    command: npm start
+
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
     volumes:
       - ./frontend:/app
-      - node_node_modules:/app/node_modules
+      - frontend_node_modules:/app/node_modules
     ports:
       - "3002:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
+      - REACT_APP_WS_URL=ws://localhost:3001
     depends_on:
       - rails
       - node
+    command: npm start
 
 volumes:
+  postgres_data:
+  redis_data:
+  rails_gems:
   rails_node_modules:
-    driver: local
-  node_node_modules:
-    driver: local
+  node_modules:
+  frontend_node_modules:
