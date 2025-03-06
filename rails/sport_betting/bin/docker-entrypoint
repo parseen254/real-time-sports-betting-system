@@ -1,8 +1,37 @@
-#!/bin/bash -e
+#!/bin/bash
+set -e
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-  ./bin/rails db:prepare
+# Remove a potentially pre-existing server.pid for Rails.
+rm -f /rails/tmp/pids/server.pid
+
+# Install dependencies
+bundle check || bundle install
+
+# Wait for database
+until pg_isready -h db -p 5432; do
+  echo "Waiting for PostgreSQL to become available..."
+  sleep 2
+done
+
+# Wait for Redis
+until redis-cli -h redis ping; do
+  echo "Waiting for Redis to become available..."
+  sleep 2
+done
+
+# Set up database or run migrations if needed
+if [ ! -f "./tmp/db_setup_complete" ]; then
+  echo "Setting up database..."
+  bundle exec rails db:prepare
+  touch ./tmp/db_setup_complete
+else
+  echo "Running pending migrations..."
+  bundle exec rails db:migrate
 fi
 
-exec "${@}"
+# Start rails server
+if [ "${RAILS_ENV}" = "development" ]; then
+  bundle exec rails server -b 0.0.0.0
+else
+  bundle exec rails server -e production -b 0.0.0.0
+fi

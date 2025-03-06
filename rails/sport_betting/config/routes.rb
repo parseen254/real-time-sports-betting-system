@@ -1,13 +1,14 @@
 Rails.application.routes.draw do
-  devise_for :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # Health check endpoint
+  get '/health', to: 'health#show'
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  # Devise routes for authentication
+  devise_for :users, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
+  }
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # API routes
   namespace :api do
     namespace :v1 do
       resources :users, only: [:create] do
@@ -15,7 +16,15 @@ Rails.application.routes.draw do
           get :bets
         end
       end
-      resources :bets, only: [:create]
+      resources :bets, only: [:create, :index, :show]
+      resources :games, only: [:index, :show]
+      get 'leaderboard', to: 'leaderboard#index'
     end
   end
+
+  # WebSocket cable route
+  mount ActionCable.server => '/cable'
+
+  # Root route for API documentation
+  root 'api_docs#index'
 end

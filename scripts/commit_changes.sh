@@ -1,21 +1,29 @@
 #!/bin/bash
 
-# Check if a commit message is provided
-if [ -z "$1" ]; then
-  echo "Please provide a commit message."
-  exit 1
-fi
+# Make docker-entrypoint executable
+chmod +x rails/sport_betting/bin/docker-entrypoint
 
-# Add all changes
+# Stage changes
 git add .
 
-# Commit changes with the provided message
-git commit -m "$1"
+# Create commit message
+commit_message="Implement health checks and improve system reliability
 
-# Check for errors during commit
-if [ $? -ne 0 ]; then
-  echo "Commit failed."
-  exit 1
-fi
+- Added health check endpoints for Rails and Node.js
+- Added Redis initializer with connection pool
+- Updated docker-compose with health checks
+- Added executable docker-entrypoint script
+- Improved service dependencies and startup sequence
 
-echo "Changes committed successfully."
+Health Check Endpoints:
+- Rails: /health
+- Node: /health
+- Redis: Using PING
+- PostgreSQL: Using pg_isready
+
+This ensures proper service orchestration and monitoring capability."
+
+# Commit changes
+git commit -m "$commit_message"
+
+echo "Changes committed successfully"
