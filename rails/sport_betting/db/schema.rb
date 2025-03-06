@@ -10,27 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_04_150329) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_06_150500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "bets", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "game_id", null: false
-    t.decimal "amount"
-    t.integer "odds"
-    t.integer "status"
+    t.decimal "amount", precision: 10, scale: 2
+    t.decimal "odds", precision: 10, scale: 2
+    t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "selected_team"
+    t.index ["game_id", "status"], name: "index_bets_on_game_id_and_status"
     t.index ["game_id"], name: "index_bets_on_game_id"
+    t.index ["status"], name: "index_bets_on_status"
+    t.index ["user_id", "status"], name: "index_bets_on_user_id_and_status"
     t.index ["user_id"], name: "index_bets_on_user_id"
   end
 
   create_table "games", force: :cascade do |t|
     t.string "name"
-    t.decimal "odds"
+    t.decimal "odds_home"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "odds_away"
+    t.string "home_team"
+    t.string "away_team"
+    t.datetime "start_time"
+    t.integer "status", default: 0
+    t.string "winner"
   end
 
   create_table "users", force: :cascade do |t|
@@ -42,8 +52,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_04_150329) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "balance", precision: 10, scale: 2, default: "0.0"
+    t.string "username", null: false
+    t.index ["balance"], name: "index_users_on_balance"
+    t.index ["created_at"], name: "index_users_on_created_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "bets", "games"
